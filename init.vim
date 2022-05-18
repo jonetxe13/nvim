@@ -1,64 +1,122 @@
-:set number
-:set rnu
-:highlight Pmenu ctermbg=lightgray
-:highlight Pmenu ctermfg=black
-" move among buffers with CTRL
-map <C-J> :bnext<CR>
-map <C-K> :bprev<CR>
-" NERDTree
-nnoremap <silent> <C-n> :NERDTreeToggle<CR>
-"prettier -> :Prettier
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
+" Fundamentals "{{{
+" ---------------------------------------------------------------------
 
-call plug#begin()
+" init autocmd
+autocmd!
+" set script encoding
+scriptencoding utf-8
+" stop loading config if it's on tiny or small
+if !1 | finish | endif
 
-Plug 'scrooloose/nerdtree'
-Plug 'ryanoasis/vim-devicons'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+set nocompatible
+set rnu
+set number
+syntax enable
+set fileencodings=utf-8,sjis,euc-jp,latin
+set encoding=utf-8
+set title
+set autoindent
+"set background=dark
+set nobackup
+set hlsearch
+set showcmd
+set cmdheight=1
+set laststatus=2
+set scrolloff=10
+set expandtab
+"let loaded_matchparen = 1
+set backupskip=/tmp/*,/private/tmp/*
 
-"autocompletions"
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' }
-Plug 'kosayoda/nvim-lightbulb'
-Plug 'github/copilot.vim'
+" incremental substitution (neovim)
+if has('nvim')
+  set inccommand=split
+endif
 
-Plug 'othree/html5.vim'
-Plug 'turbio/bracey.vim'
-Plug 'lukas-reineke/indent-blankline.nvim'
-Plug 'andymass/vim-matchup'
-Plug 'tpope/vim-commentary'
-Plug 'puremourning/vimspector'
-Plug 'sheerun/vim-polyglot'
-Plug 'tmsvg/pear-tree'
-Plug 'junegunn/fzf'
-Plug 'voldikss/vim-floaterm'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'morhetz/gruvbox'
-Plug 'flazz/vim-colorschemes'
+" Suppress appending <PasteStart> and <PasteEnd> when pasting
+set t_BE=
 
-call plug#end()
+set nosc noru nosm
+" Don't redraw while executing macros (good performance config)
+set lazyredraw
+"set showmatch
+" Ignore case when searching
+set ignorecase
+" Be smart when using tabs ;)
+set smarttab
+" indents
+filetype plugin indent on
+set shiftwidth=2
+set tabstop=2
+set ai "Auto indent
+set si "Smart indent
+set nowrap "No Wrap lines
+set backspace=start,eol,indent
+" Finding files - Search down into subfolders
+set path+=**
 
-let g:airline#extensions#tabline#enabled = 1 " Enable the list of buffers
+" Turn off paste mode when leaving insert
+autocmd InsertLeave * set nopaste
 
-"terminal
-" open new split panes to right and below
-set splitright
-set splitbelow
-" turn terminal to normal mode with escape
-tnoremap <Esc> <C-\><C-n>
-" start terminal in insert mode
-au BufEnter * if &buftype == 'bash' | :startinsert | endif
-" open terminal on ctrl+t
-function! OpenTerminal()
-  split term://bash
-  resize 10
-endfunction
-nnoremap <c-t> :call OpenTerminal()<CR>
 
-"buscar archivos
-nnoremap <C-p> :FZF<CR>
+"}}}
 
-:colorscheme gruvbox
+" Highlights "{{{
+" ---------------------------------------------------------------------
+"set cursorline
+"set cursorcolumn
 
-syntax on
+" Set cursor line color on visual mode
+"highlight Visual cterm=NONE ctermbg=236 ctermfg=NONE guibg=Grey40
+
+"highlight LineNr cterm=none ctermfg=240 guifg=#2b506e guibg=#000000
+
+augroup BgHighlight
+  autocmd!
+  autocmd WinEnter * set cul
+  autocmd WinLeave * set nocul
+augroup END
+
+if &term =~ "screen"
+  autocmd BufEnter * if bufname("") !~ "^?[A-Za-z0-9?]*://" | silent! exe '!echo -n "\ek[`hostname`:`basename $PWD`/`basename %`]\e\\"' | endif
+  autocmd VimLeave * silent!  exe '!echo -n "\ek[`hostname`:`basename $PWD`]\e\\"'
+endif
+
+"}}}
+
+" Imports "{{{
+" ---------------------------------------------------------------------
+runtime ./plug.vim
+if has("unix")
+  let s:uname = system("uname -s")
+  " Do Mac stuff
+  if s:uname == "Darwin\n"
+    runtime ./macos.vim
+  endif
+endif
+
+runtime ./maps.vim
+"}}}
+
+" Syntax theme "{{{
+" ---------------------------------------------------------------------
+
+" true color
+if exists("&termguicolors") && exists("&winblend")
+  syntax enable
+  set termguicolors
+  set winblend=0
+  set wildoptions=pum
+  set pumblend=5
+  set background=dark
+  runtime ./colors/gruvbox.vim
+  colorscheme gruvbox
+endif
+
+"}}}
+
+" Extras "{{{
+" ---------------------------------------------------------------------
+set exrc
+"}}}
+
+" vim: set foldmethod=marker foldlevel=0:
