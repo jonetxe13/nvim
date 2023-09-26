@@ -106,4 +106,19 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 }
 
+require'lspconfig'.dockerls.setup{
+--   cmd:
+--   { "docker-langserver", "--stdio" },
+--   filetypes: {
+--     "dockerfile"
+--   },
+--   root_dir:{
+--     root_pattern("Dockerfile")
+--   },
+-- single_file_support:{
+--
+-- }
+
+}
+
 return M
