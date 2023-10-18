@@ -106,6 +106,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 }
 
+-- TypeScript
+require("lspconfig").tsserver.setup {
+  on_attach = on_attach,
+  filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+  cmd = { "typescript-language-server", "--stdio" }
+}
+
 require'lspconfig'.dockerls.setup{
 --   cmd:
 --   { "docker-langserver", "--stdio" },
