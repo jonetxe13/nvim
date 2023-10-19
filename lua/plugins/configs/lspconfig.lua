@@ -127,5 +127,6 @@ require'lspconfig'.dockerls.setup{
 -- }
 
 }
+require("flutter-tools").setup{}
 
 return M

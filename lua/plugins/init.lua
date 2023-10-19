@@ -262,6 +262,15 @@ local default_plugins = {
       require("which-key").setup(opts)
     end,
   },
+  {
+    'akinsho/flutter-tools.nvim',
+    lazy = false,
+    dependencies = {
+        'nvim-lua/plenary.nvim',
+        'stevearc/dressing.nvim', -- optional for vim.ui.select
+    },
+    config = true,
+  }
 }
 
 local config = require("core.utils").load_config()
