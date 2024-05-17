@@ -4,6 +4,13 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.opt.conceallevel = 2
+-- You can add this in your init.lua
+-- or a plugin script
+
+vim.opt.completeopt = { "menu", "menuone", "noselect", "noinsert" }
+vim.opt.shortmess:append "c"
+
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -532,6 +539,7 @@ require("lazy").setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+            capabilities.offsetEncoding = { "utf-16", "utf-8" }
             require("lspconfig")[server_name].setup(server)
           end,
         },
@@ -643,7 +651,7 @@ require("lazy").setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ["<C-y>"] = cmp.mapping.confirm { select = true },
+          ["<Tab>"] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -852,6 +860,79 @@ require("lazy").setup({
         vim.keymap.set(mapping[1], mapping[2], mapping[3], opts)
       end
     end,
+  },
+  {
+    "epwalsh/obsidian.nvim",
+    version = "*", -- recommended, use latest release instead of latest commit
+    lazy = true,
+    ft = "markdown",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+
+    opts = {
+      workspaces = {
+        {
+          name = "universidad",
+          path = "~/Desktop/obsidian/",
+        },
+      },
+      -- URL it will be ignored but you can customize this behavior here.
+      follow_url_func = function(url)
+        -- Open the URL in the default web browser.
+        -- vim.fn.jobstart({"open", url})  -- Mac OS
+        vim.fn.jobstart { "xdg-open", url } -- linux
+      end,
+
+      preferred_link_style = "wiki",
+      new_notes_location = "current_dir",
+
+      completion = {
+        nvim_cmp = true,
+        min_chars = 2,
+      },
+
+      daily_notes = {
+        -- Optional, if you keep daily notes in a separate directory.
+        folder = "DailyNotes",
+        -- Optional, if you want to change the date format for the ID of daily notes.
+        date_format = "%Y-%m-%d",
+        -- Optional, if you want to automatically insert a template from your template directory like 'daily.md'
+        template = "Template/Daily notes template.md",
+      },
+
+      ui = {
+        enable = true,
+        checkboxes = {
+          [" "] = { char = "󰄱", hl_group = "ObsidianTodo" },
+          ["x"] = { char = "", hl_group = "ObsidianDone" },
+          [">"] = { char = "", hl_group = "ObsidianRightArrow" },
+          ["~"] = { char = "󰰱", hl_group = "ObsidianTilde" },
+        },
+      },
+
+      bullets = { char = "•", hl_group = "ObsidianBullet" },
+      external_link_icon = { char = "", hl_group = "ObsidianExtLinkIcon" },
+      reference_text = { hl_group = "ObsidianRefText" },
+      highlight_text = { hl_group = "ObsidianHighlightText" },
+
+      mappings = {
+        -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
+        ["gf"] = {
+          action = function()
+            return require("obsidian").util.gf_passthrough()
+          end,
+          opts = { noremap = false, expr = true, buffer = true },
+        },
+        -- Toggle check-boxes.
+        ["<leader>ch"] = {
+          action = function()
+            return require("obsidian").util.toggle_checkbox()
+          end,
+          opts = { buffer = true },
+        },
+      },
+    },
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
